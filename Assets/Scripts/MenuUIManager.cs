@@ -9,6 +9,8 @@ using UnityEditor;
 public class MenuUIManager : MonoBehaviour
 {
 
+    public static string input;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -19,6 +21,11 @@ public class MenuUIManager : MonoBehaviour
     void Update()
     {
 
+    }
+    void ReadStringInput(string s)
+    {
+        input = s;
+        Debug.Log(input);
     }
     public void StartNew()
     {

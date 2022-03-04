@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
+using System.IO;
 public class MainManager : MonoBehaviour
 {
     public Brick BrickPrefab;
@@ -12,20 +12,22 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
-    
+
     private bool m_Started = false;
     private int m_Points;
-    
+
     private bool m_GameOver = false;
 
-    
+    public string playerName = "blank";
+
+    public static MainManager Instance;
     // Start is called before the first frame update
     void Start()
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
-        
-        int[] pointCountArray = new [] {1,1,2,2,5,5};
+
+        int[] pointCountArray = new[] { 1, 1, 2, 2, 5, 5 };
         for (int i = 0; i < LineCount; ++i)
         {
             for (int x = 0; x < perLine; ++x)
@@ -40,6 +42,8 @@ public class MainManager : MonoBehaviour
 
     private void Update()
     {
+        playerName = MenuUIManager.input;
+        GetCurrentName();
         if (!m_Started)
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -62,6 +66,14 @@ public class MainManager : MonoBehaviour
         }
     }
 
+    void GetCurrentName()
+    {
+        if (Input.GetKey(KeyCode.Backspace))
+        {
+            Debug.Log(playerName);
+        }
+    }
+
     void AddPoint(int point)
     {
         m_Points += point;
@@ -72,5 +84,30 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+    }
+    [System.Serializable]
+    class SaveData
+    {
+        public string input;
+    }
+
+    public void SaveColor()
+    {
+        SaveData data = new SaveData();
+
+        string json = JsonUtility.ToJson(data);
+
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
     }
 }
